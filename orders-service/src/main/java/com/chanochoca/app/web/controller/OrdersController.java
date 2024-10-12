@@ -1,4 +1,4 @@
-package com.chanochoca.app.controller;
+package com.chanochoca.app.web.controller;
 
 import com.chanochoca.app.dto.Order;
 import com.chanochoca.app.dto.CreateOrderRequest;

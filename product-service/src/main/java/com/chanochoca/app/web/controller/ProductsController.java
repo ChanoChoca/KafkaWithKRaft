@@ -1,4 +1,4 @@
-package com.chanochoca.app.controller;
+package com.chanochoca.app.web.controller;
 
 import com.chanochoca.app.dto.Product;
 import com.chanochoca.app.dto.ProductCreationRequest;

@@ -2,6 +2,10 @@ package com.chanochoca.app.service;
 
 import com.chanochoca.app.dto.Order;
 
+import java.util.UUID;
+
 public interface OrderService {
     Order placeOrder(Order order);
+
+    void approveOrder(UUID orderId);
 }
