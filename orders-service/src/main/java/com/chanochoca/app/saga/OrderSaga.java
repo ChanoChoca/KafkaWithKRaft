@@ -1,12 +1,7 @@
 package com.chanochoca.app.saga;
 
-import com.chanochoca.app.dto.commands.ApproveOrderCommand;
-import com.chanochoca.app.dto.commands.ProcessPaymentCommand;
-import com.chanochoca.app.dto.commands.ReserveProductCommand;
-import com.chanochoca.app.dto.events.OrderApprovedEvent;
-import com.chanochoca.app.dto.events.OrderCreatedEvent;
-import com.chanochoca.app.dto.events.PaymentProcessedEvent;
-import com.chanochoca.app.dto.events.ProductReservedEvent;
+import com.chanochoca.app.dto.commands.*;
+import com.chanochoca.app.dto.events.*;
 import com.chanochoca.app.service.OrderHistoryService;
 import com.chanochoca.app.types.OrderStatus;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,5 +68,22 @@ public class OrderSaga {
     @KafkaHandler
     public void handleEvent(@Payload OrderApprovedEvent event) {
         orderHistoryService.add(event.getOrderId(), OrderStatus.APPROVED);
+    }
+
+    @KafkaHandler
+    public void handleEvent(@Payload PaymentFailedEvent event) {
+        CancelProductReservationCommand cancelProductReservationCommand =
+                new CancelProductReservationCommand(event.getProductId(),
+                        event.getOrderId(),
+                        event.getProductQuantity());
+        kafkaTemplate.send(productsCommandsTopicName, cancelProductReservationCommand);
+    }
+
+    @KafkaHandler
+    public void handleEvent(@Payload ProductReservationCancelledEvent event) {
+
+        RejectOrderCommand rejectOrderCommand = new RejectOrderCommand(event.getOrderId());
+        kafkaTemplate.send(ordersCommandsTopicName, rejectOrderCommand);
+        orderHistoryService.add(event.getOrderId(), OrderStatus.REJECTED);
     }
 }

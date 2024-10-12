@@ -1,6 +1,8 @@
 package com.chanochoca.app.service.handler;
 
 import com.chanochoca.app.dto.Product;
+import com.chanochoca.app.dto.commands.CancelProductReservationCommand;
+import com.chanochoca.app.dto.commands.ProductReservationCancelledEvent;
 import com.chanochoca.app.dto.commands.ReserveProductCommand;
 import com.chanochoca.app.dto.events.ProductReservationFailedEvent;
 import com.chanochoca.app.dto.events.ProductReservedEvent;
@@ -50,5 +52,15 @@ public class ProductCommandsHandler {
                     command.getOrderId(), command.getProductQuantity());
             kafkaTemplate.send(productEventsTopicName, productReservationFailedEvent);
         }
+    }
+
+    @KafkaHandler
+    public void handleCommand(@Payload CancelProductReservationCommand command) {
+        Product productToCancel = new Product(command.getProductId(), command.getProductQuantity());
+        productService.cancelReservation(productToCancel, command.getOrderId());
+
+        ProductReservationCancelledEvent productReservationCancelledEvent =
+                new ProductReservationCancelledEvent(command.getProductId(), command.getOrderId());
+        kafkaTemplate.send(productEventsTopicName, productReservationCancelledEvent);
     }
 }

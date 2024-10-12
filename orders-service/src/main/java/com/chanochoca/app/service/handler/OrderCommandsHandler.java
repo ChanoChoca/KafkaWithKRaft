@@ -1,6 +1,7 @@
 package com.chanochoca.app.service.handler;
 
 import com.chanochoca.app.dto.commands.ApproveOrderCommand;
+import com.chanochoca.app.dto.commands.RejectOrderCommand;
 import com.chanochoca.app.service.OrderService;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -20,5 +21,10 @@ public class OrderCommandsHandler {
     @KafkaHandler
     public void handleCommand(@Payload ApproveOrderCommand approveOrderCommand) {
         orderService.approveOrder(approveOrderCommand.getOrderId());
+    }
+
+    @KafkaHandler
+    public void handleCommand(@Payload RejectOrderCommand rejectOrderCommand) {
+        orderService.rejectOrder(rejectOrderCommand.getOrderId());
     }
 }
